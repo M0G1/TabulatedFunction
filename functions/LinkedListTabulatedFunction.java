@@ -138,7 +138,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
     /**
      * index from 0 to n-1
      */
-    public FunctionNode getNodeByIndex(int index) throws FunctionPointIndexOutOfBoundsException {
+    private FunctionNode getNodeByIndex(int index) throws FunctionPointIndexOutOfBoundsException {
         checkIndex(index);
         FunctionNode cur;
         if (index < size - 1 - index) { //смотрим как ближе дойти
@@ -156,21 +156,17 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
 
     }
 
-    public FunctionNode addNodeToTail() {
-        if (size == 0) {
-            FunctionNode nextPrevHead = new FunctionNode(new FunctionPoint((this.size > 0 ? this.getRightDomainBorder() + 1 : 0), 0));
-            this.head = new FunctionNode(nextPrevHead, null, nextPrevHead); //зацикливание списка на голове
-        } else {
-            this.head.prev.next = new FunctionNode(this.head.prev, new FunctionPoint(this.getRightDomainBorder() + 1, 0), this.head); //к последнему целяем новый элемент, который ссылается на голову
-        }
+    private FunctionNode addNodeToTail() {
+        FunctionPoint lastPoint = new FunctionPoint((this.size > 0 ? this.getRightDomainBorder() + 1 : 0), 0);
+        FunctionNode nextPrevHead = new FunctionNode(this.head.prev, lastPoint, this.head);
         ++this.size;
-        return this.head.prev;
+        return nextPrevHead;
     }
 
     /**
      * index from 0 to n-1
      */
-    public FunctionNode addNodeByIndex(int index) throws FunctionPointIndexOutOfBoundsException {
+    private FunctionNode addNodeByIndex(int index) throws FunctionPointIndexOutOfBoundsException {
         checkIndex(index);
         FunctionNode onIndex = getNodeByIndex(index);
 
@@ -185,10 +181,10 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         }
 
         FunctionNode newNode = new FunctionNode(prev, new FunctionPoint(x_average, 0), onIndex);
-        return new FunctionNode(newNode.val);
+        return newNode;
     }
 
-    FunctionNode deleteNodeByIndex(int index) throws FunctionPointIndexOutOfBoundsException, IllegalStateException {
+    private FunctionNode deleteNodeByIndex(int index) throws FunctionPointIndexOutOfBoundsException, IllegalStateException {
         checkIndex(index);
         if (this.size < 3) {
             throw new IllegalStateException("In function of less than 3 points");
